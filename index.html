@@ -484,6 +484,38 @@ main { background: transparent !important; }
 .kpi::after { background: #E8750A !important; }
 .status-dot.ok { background: #E8750A !important; box-shadow: 0 0 8px rgba(232,117,10,0.5) !important; }
 
+
+/* ── BRIGHTNESS & COLOR FIXES ── */
+
+/* Overlay lighter so image shows more and BG is less black */
+body::before {
+  background: rgba(5, 10, 18, 0.68) !important;
+}
+
+/* KPI values brighter */
+.kpi-val { color: #F2EDE4 !important; font-size: 26px !important; }
+.kpi-lbl { color: #8AABCC !important; }
+.kpi { border: 1px solid rgba(232,117,10,0.2) !important; }
+
+/* Sidebar text brighter */
+.fg label { color: #C8D8E8 !important; }
+.stat { color: #A0B8CC !important; }
+.stat-v { color: #F2EDE4 !important; }
+.sb-label { color: #7AABCC !important; }
+
+/* Tab text brighter */
+.tab { color: #8AABCC !important; }
+.tab:hover { color: #F2EDE4 !important; }
+
+/* Table text brighter */
+td { color: #C8D8E8 !important; }
+td:first-child { color: #F2EDE4 !important; }
+th { color: #7AABCC !important; }
+
+/* Active filters text */
+.no-filter { color: #6A8AAA !important; }
+.af-lbl { color: #7AABCC !important; }
+
 </style>
 </head>
 <body>
@@ -613,7 +645,7 @@ const fmtN=n=>Number(n).toLocaleString('en-IN');
 const fmtD=d=>{const s=String(d).trim();return s.length===8?`${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}`:s;};
 const fv=id=>document.getElementById(id).value;
 
-const ZONE_COLORS={North:'#7BA7F7',South:'#8FA392',East:'#D4C4A8',West:'#B99EF5',Unknown:'#526D8A'};
+const ZONE_COLORS={North:'#4D9EFF',South:'#4EC994',East:'#FFB347',West:'#C084FC',Unknown:'#64748B'};
 const SAGE='#778D7A';
 
 document.getElementById('file-in').addEventListener('change',e=>{
@@ -714,7 +746,7 @@ function renderTrend(){
   destroyChart('trend');
   charts.trend=new Chart(document.getElementById('chart-trend'),{
     type:'bar',
-    data:{labels:dates,datasets:[{label:'Pickups',data:vals,backgroundColor:'rgba(119,141,122,0.25)',borderColor:SAGE,borderWidth:1.5,borderRadius:3,hoverBackgroundColor:'rgba(119,141,122,0.4)'}]},
+    data:{labels:dates,datasets:[{label:'Pickups',data:vals,backgroundColor:'rgba(232,117,10,0.55)',borderColor:'#F09030',borderWidth:1.5,borderRadius:3,hoverBackgroundColor:'rgba(240,144,48,0.75)'}]},
     options:{...CHART_DEFAULTS,plugins:{...CHART_DEFAULTS.plugins,tooltip:{...TT,callbacks:{label:ctx=>` ${fmtN(ctx.parsed.y)} pickups`}}}}
   });
 
@@ -723,7 +755,7 @@ function renderTrend(){
   destroyChart('zone');
   charts.zone=new Chart(document.getElementById('chart-zone'),{
     type:'bar',
-    data:{labels:dates,datasets:zones.map(z=>({label:z,data:dates.map(d=>byDZ[d]?.[z]||0),backgroundColor:(ZONE_COLORS[z]||'#526D8A')+'55',borderColor:ZONE_COLORS[z]||'#526D8A',borderWidth:1,borderRadius:2}))},
+    data:{labels:dates,datasets:zones.map(z=>({label:z,data:dates.map(d=>byDZ[d]?.[z]||0),backgroundColor:(ZONE_COLORS[z]||'#64748B')+'BB',borderColor:ZONE_COLORS[z]||'#526D8A',borderWidth:1,borderRadius:2}))},
     options:{...CHART_DEFAULTS,plugins:{...CHART_DEFAULTS.plugins,legend:{display:true,position:'bottom',labels:{font:{size:9,family:"'JetBrains Mono',monospace"},color:'#526D8A',boxWidth:8,padding:10}}},scales:{x:{...CHART_DEFAULTS.scales.x,stacked:true},y:{...CHART_DEFAULTS.scales.y,stacked:true}}}
   });
 
@@ -732,7 +764,7 @@ function renderTrend(){
   destroyChart('donut');
   charts.donut=new Chart(document.getElementById('chart-donut'),{
     type:'doughnut',
-    data:{labels:zE.map(([z])=>z),datasets:[{data:zE.map(([,v])=>v),backgroundColor:zE.map(([z])=>(ZONE_COLORS[z]||'#526D8A')+'BB'),borderWidth:2,borderColor:'#1B263B',hoverBorderColor:'#415A77'}]},
+    data:{labels:zE.map(([z])=>z),datasets:[{data:zE.map(([,v])=>v),backgroundColor:zE.map(([z])=>(ZONE_COLORS[z]||'#64748B')+'EE'),borderWidth:2,borderColor:'#1B263B',hoverBorderColor:'#415A77'}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{font:{size:9,family:"'JetBrains Mono',monospace"},color:'#D4C4A8',boxWidth:8,padding:8}},tooltip:{...TT,callbacks:{label:ctx=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return ` ${fmtN(ctx.parsed)} (${(ctx.parsed/t*100).toFixed(1)}%)`;}}}}}
   });
 }
