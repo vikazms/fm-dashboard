@@ -709,6 +709,27 @@ document.querySelectorAll('.tab').forEach(t => {
 function showOverlay(msg) { document.getElementById('overlay-msg').textContent=msg; document.getElementById('overlay').style.display='flex'; }
 function hideOverlay() { document.getElementById('overlay').style.display='none'; }
 
+
+// ── Auto-fetch fm_dashboard_data.json from same folder (GitHub Pages) ─────────
+(function() {
+  if (PRELOADED_DATA && PRELOADED_DATA.rows && PRELOADED_DATA.rows.length) return; // already embedded
+  showOverlay('Fetching latest data…');
+  fetch('fm_dashboard_data.json')
+    .then(r => {
+      if (!r.ok) throw new Error('File not found');
+      return r.json();
+    })
+    .then(data => {
+      META = data.meta || {};
+      RAW  = data.rows  || [];
+      allDates = (META.dates || [...new Set(RAW.map(r => r[META.date_col]))]).sort();
+      onDataLoaded('fm_dashboard_data.json');
+    })
+    .catch(() => {
+      hideOverlay(); // silently fall back to manual load button
+    });
+})();
+
 // ── Auto-load preloaded data (standalone mode) ────────────────────────────────
 (function() {
   if (PRELOADED_DATA && PRELOADED_DATA.rows && PRELOADED_DATA.rows.length) {
