@@ -671,7 +671,7 @@ function onDataLoaded(fname){
 function applyAll(){
   const zone=fv('f-zone'),gm=fv('f-gm'),rm=fv('f-rm'),am=fv('f-am'),hub=fv('f-hub'),stack=fv('f-stack');
   const{from,to}=getDateRange();const dc=META.date_col;
-  filtered=RAW.filter(r=>(!zone||r.Zone===zone)&&(!gm||r.GM===gm)&&(!rm||r.RM===rm)&&(!am||r.AM===am)&&(!hub||r[META.hub_col]===hub)&&(!stack||r.stack===stack)&&(!from||fmtD(r[dc])>=from)&&(!to||fmtD(r[dc])<=to));
+  filtered=RAW.filter(r=>(!zone||r.Zone===zone)&&(!gm||r.GM===gm)&&(!rm||r.RM===rm)&&(!am||r.AM===am)&&(!hub||r[META.hub_col]===hub)&&(!stack||r.stack===stack)&&(!from||fmtD(r[dc])>=fmtD(from))&&(!to||fmtD(r[dc])<=fmtD(to)));
   updateActiveFilters({Zone:zone,GM:gm,RM:rm,AM:am,Hub:hub,Stack:stack});
   updateKPIs();updateSidebar();renderTrend();renderHubTable();renderDetailTable();
   const av=document.querySelector('.tab.active')?.dataset.view;if(av)showView(av);
@@ -803,7 +803,12 @@ function showView(v){['trend','hub','table'].forEach(t=>document.getElementById(
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');showView(t.dataset.view);}));
 ['f-zone','f-gm','f-rm','f-am','f-hub','f-stack'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{populateFilters();applyAll();}));
 document.getElementById('reset-btn').addEventListener('click',()=>{['f-zone','f-gm','f-rm','f-am','f-hub','f-stack'].forEach(id=>document.getElementById(id).value='');document.querySelectorAll('.dpill').forEach(b=>b.classList.toggle('active',b.dataset.days==='all'));document.getElementById('d-from').value='';document.getElementById('d-to').value='';populateFilters();applyAll();});
-document.querySelectorAll('.dpill').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.dpill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const days=btn.dataset.days;if(days==='all'){document.getElementById('d-from').value='';document.getElementById('d-to').value='';}else{const to=allDates[allDates.length-1]||'';const toD=new Date(fmtD(to)||new Date());const fromD=new Date(toD);fromD.setDate(fromD.getDate()-parseInt(days)+1);document.getElementById('d-from').value=fromD.toISOString().slice(0,10).replace(/-/g,'');document.getElementById('d-to').value=to;}applyAll();}));
+document.querySelectorAll('.dpill').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.dpill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const days=btn.dataset.days;if(days==='all'){document.getElementById('d-from').value='';document.getElementById('d-to').value='';}else{const to=allDates[allDates.length-1]||'';
+    const toFmt=fmtD(to);
+    const toD=new Date(toFmt);const fromD=new Date(toD);
+    fromD.setDate(fromD.getDate()-parseInt(days)+1);
+    document.getElementById('d-from').value=fromD.toISOString().slice(0,10);
+    document.getElementById('d-to').value=toFmt;}applyAll();}));
 ['d-from','d-to'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{document.querySelectorAll('.dpill').forEach(b=>b.classList.remove('active'));applyAll();}));
 
 function showOverlay(msg){document.getElementById('overlay-msg').textContent=msg;document.getElementById('overlay').style.display='flex';}
